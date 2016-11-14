@@ -1,19 +1,32 @@
 
 object Main extends App {
 
+  object TryCatch {
 
-  import java.util.Calendar
+    def main(args: Array[String]) = {
+      args foreach (arg => countLines(arg))
+    }
 
-  def isFridayThirteen(cal: Calendar): Boolean = {
-    val dayOfWeek = cal.get(Calendar.DAY_OF_WEEK)
-    val dayOfMonth = cal.get(Calendar.DAY_OF_MONTH)
-    // Scala returns the result of the last expression in a method
-    (dayOfWeek == Calendar.FRIDAY) && (dayOfMonth == 10)
+    import scala.io.Source
+    import scala.util.control.NonFatal
+
+    def countLines(fileName: String) = {
+      println()
+      var source: Option[Source] = None
+      try {
+        source = Some(Source.fromFile(fileName))
+        val size = source.get.getLines.size
+        println(s"file $fileName has $size lines")
+      } catch {
+        case NonFatal(ex) => println(s"Non fatal exception! $ex")
+      } finally {
+        for (s <- source) {
+          println(s"Closing $fileName...")
+          s.close
+        }
+      }
+    }
+
   }
 
-  while (!isFridayThirteen(Calendar.getInstance())) {
-    println("Today isn't Friday the 13th. Lame.")
-    // sleep for a day
-    Thread.sleep(86400000)
-  }
 }
